@@ -53,11 +53,11 @@ class Geometry(object):
         # Диагональный вектор
         self.diagonal_vector = (self.top_diagonal_point - self.bottom_diagonal_point).Normalize()
 
-    def intersect_point(self, p1, p2, p3, p4):
+    def intersect_point(self, start_one, end_one, start_two, end_two):
         "Находит пересечения между линиями на основе точек."
-        l1 = Line.CreateBound(p1, p2)
+        l1 = Line.CreateBound(start_one, end_one)
         l1.MakeUnbound()
-        l2 = Line.CreateBound(p3, p4)
+        l2 = Line.CreateBound(start_two, end_two)
         l2.MakeUnbound()
         res = StrongBox[IntersectionResultArray]()
         l1.Intersect(l2, res)
@@ -111,12 +111,15 @@ class Geometry(object):
         for i in self.faces:
             if i.FaceNormal.IsAlmostEqualTo(vert_vect):
                 self.tread_faces.append(i)
+
         self.ricer_faces = []
         for i in self.tread_faces:
             for j in self.longest_or_shortest_edge(i):
                 for k in self.faces:
                     if self.get_common_edge(j, k, i) and k not in self.ricer_faces:
                         self.ricer_faces.append(k)
+
+        # Боковые плоскости имеют общие линии с каждой проступью
         self.side_faces = []
         for face_1 in self.faces:
             all_face_have_common_edge = True
