@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*- 
 from Autodesk.Revit.DB import FilteredElementCollector, BuiltInParameter
 from Autodesk.Revit.DB.Structure import RebarBarType, Rebar, RebarHookOrientation, RebarStyle, RebarHookType
-from common_scripts import echo
 from math import pi, ceil, cos, tan, sin, floor
 
 class Stair_rebar(object):
@@ -45,7 +44,7 @@ class Stair_rebar(object):
         self.diagonal_rebar_count += 1
         # Рассчитываем отступ первого стержня от боковой грани
         self.diagonal_side_space = (self.stair_width - self.diagonal_width_calculate) / 2
-    
+
     def create_diagonal_rebar(self):
         "Создаем диагональные стержни марша."
         layer_diam_len = self.safe_layer + self.general_rebar_diameter / 2

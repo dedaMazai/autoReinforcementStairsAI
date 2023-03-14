@@ -14,7 +14,7 @@ class Geometry(object):
 
     def define_mesures(self):
         "Снимаем недостающие размеры."
-        # Получим толщину марша
+        # Получим толщину марша - у всех проступей есть точки и самое короткое растояние от точки до диагональной плоскости и есть толщина
         plane = self.diagornal_face.GetSurface()
         stair_thick = float("inf")
         for i in self.tred_faces:

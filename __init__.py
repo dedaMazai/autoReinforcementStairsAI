@@ -12,7 +12,9 @@ class Stair(Geometry, Stair_rebar):
         self.geometry = self.element.Geometry[Options()]
         super(Stair, self).__init__()
 
-stair = doc.GetElement(ElementId(2111225))
+
+stair = doc.GetElement(ElementId(2707462))
+
 with Transaction(doc, "Анализ геометрии") as t:
     t.Start()
     stair = Stair(stair, doc)
