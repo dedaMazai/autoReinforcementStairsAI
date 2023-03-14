@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 from Autodesk.Revit.DB import Options, Solid,GeometryInstance, ElementId, SketchPlane
 from Autodesk.Revit.DB import Line, XYZ, SetComparisonResult, FilteredElementCollector, IntersectionResultArray
 from math import pi, ceil
@@ -8,16 +8,19 @@ from Stair_rebar import Stair_rebar
 class Geometry(object):
     "Класс отвечающий за анализ геометрии."
     def __init__(self):
-        self.analys_faces()
-        self.define_mesures()
+        self.analysis_faces()
+        self.define_measures()
         super(Geometry, self).__init__()
 
-    def define_mesures(self):
+    def define_measures(self):
         "Снимаем недостающие размеры."
-        # Получим толщину марша - у всех проступей есть точки и самое короткое растояние от точки до диагональной плоскости и есть толщина
-        plane = self.diagornal_face.GetSurface()
+        # Получим толщину марша - у всех проступей есть точки
+        # и самое короткое растояние от точки до диагональной
+        # плоскости и есть толщина
+
+        plane = self.diagonal_face.GetSurface()
         stair_thick = float("inf")
-        for i in self.tred_faces:
+        for i in self.tread_faces:
             for point in self.get_all_face_point(i):
                 cur_distance = plane.Project(point)[1]
                 if stair_thick > cur_distance:
@@ -28,7 +31,7 @@ class Geometry(object):
         # Вектор направления марша
         self.stair_directioin = self.ricer_faces[0].FaceNormal
         # Угол уклона марша
-        self.diagonal_angle = self.diagornal_face.FaceNormal.AngleTo(self.stair_directioin) - pi / 2
+        self.diagonal_angle = self.diagonal_face.FaceNormal.AngleTo(self.stair_directioin) - pi / 2
         # Ширина марша
         self.stair_width = self.side_faces[0].GetSurface().Project(self.side_faces[1].Origin)[1]
         # Боковая грань которую мы принимаем за главную
@@ -38,15 +41,15 @@ class Geometry(object):
         # Вертикальный вектор
         self.vertical_vector = XYZ(0, 0, 1)
         # Вектор лестницы
-        self.diagornal_normal = self.diagornal_face.FaceNormal.Negate()
+        self.diagonal_normal = self.diagonal_face.FaceNormal.Negate()
 
         # Нижняя площадка толщина
-        self.bottom_floor_thick = self.first_tred_face.GetSurface().Project(self.bottom_face.Origin)[1]
+        self.bottom_floor_thick = self.first_tread_face.GetSurface().Project(self.bottom_face.Origin)[1]
         # Нижняя диагональная точка и верхняя диагональная точка
         # Начальная точка вектора - нижняя
-        self.bottom_diagonal_point = self.get_common_points(self.diagornal_face, self.bottom_face, self.gen_side_face)[0]
+        self.bottom_diagonal_point = self.get_common_points(self.diagonal_face, self.bottom_face, self.gen_side_face)[0]
         # Конечная точка диагонали стержня - верхняя
-        self.top_diagonal_point = self.get_common_points(self.diagornal_face, self.front_face, self.gen_side_face)[0]
+        self.top_diagonal_point = self.get_common_points(self.diagonal_face, self.front_face, self.gen_side_face)[0]
         # Диагональный вектор
         self.diagonal_vector = (self.top_diagonal_point - self.bottom_diagonal_point).Normalize()
 
@@ -61,23 +64,23 @@ class Geometry(object):
         return res.Value[0].XYZPoint
 
     @property
-    def first_tred_face(self):
+    def first_tread_face(self):
         first = None
         min_z = float("inf")
-        for i in self.tred_faces:
+        for i in self.tread_faces:
             if i.Origin.Z < min_z:
                 first = i
-                min_z = i.Origin.Z 
+                min_z = i.Origin.Z
         return first
 
     @property
-    def last_tred_face(self):
+    def last_tread_face(self):
         last = None
         max_z = float("-inf")
-        for i in self.tred_faces:
+        for i in self.tread_faces:
             if i.Origin.Z > max_z:
                 last = i
-                max_z = i.Origin.Z 
+                max_z = i.Origin.Z
         return last
 
     def create_lines_from_points(self, points):
@@ -91,25 +94,25 @@ class Geometry(object):
                 point_0 = point
         return lines
 
-    def analys_faces(self):
+    def analysis_faces(self):
         """
         Анализируем поверхности.
 
         Анализирует поверхности и разбивает их на несколько массивов
         side_faces - боковые поверхности
-        tred_faces - проступь
+        tread_faces - проступь
         ricer_faces - подступенок
-        diagornal_face - диагональное поверхность
+        diagonal_face - диагональное поверхность
         bottom_face - нижняя поверхность
         front_face - передняя часть(которая примыкает к плите)
         """
-        self.tred_faces = []
+        self.tread_faces = []
         vert_vect = XYZ(0, 0, 1)
         for i in self.faces:
             if i.FaceNormal.IsAlmostEqualTo(vert_vect):
-                self.tred_faces.append(i)
+                self.tread_faces.append(i)
         self.ricer_faces = []
-        for i in self.tred_faces:
+        for i in self.tread_faces:
             for j in self.longest_or_shortest_edge(i):
                 for k in self.faces:
                     if self.get_common_edge(j, k, i) and k not in self.ricer_faces:
@@ -117,23 +120,23 @@ class Geometry(object):
         self.side_faces = []
         for face_1 in self.faces:
             all_face_have_common_edge = True
-            for face_2 in self.tred_faces:
+            for face_2 in self.tread_faces:
                 if not self.have_common_edge(face_1, face_2):
                     all_face_have_common_edge = False
             if all_face_have_common_edge:
                 self.side_faces.append(face_1)
 
-        self.diagornal_face = None
+        self.diagonal_face = None
         for face in self.faces:
             normal = face.FaceNormal
             if (abs(round(normal.X, 7)) > 0 or abs(round(normal.Y, 7)) > 0) and abs(round(normal.Z, 7)) > 0:
-                self.diagornal_face = face
+                self.diagonal_face = face
 
         self.bottom_face = None
         self.front_face = None
 
         for face in self.faces:
-            if self.have_common_edge(face, self.diagornal_face, except_faces=self.side_faces + [self.diagornal_face]):
+            if self.have_common_edge(face, self.diagonal_face, except_faces=self.side_faces + [self.diagonal_face]):
                 if face.FaceNormal.IsAlmostEqualTo(vert_vect.Negate()):
                     self.bottom_face = face
                 else:

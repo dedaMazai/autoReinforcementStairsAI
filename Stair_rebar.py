@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 from Autodesk.Revit.DB import FilteredElementCollector, BuiltInParameter
 from Autodesk.Revit.DB.Structure import RebarBarType, Rebar, RebarHookOrientation, RebarStyle, RebarHookType
 from math import pi, ceil, cos, tan, sin, floor
@@ -12,7 +12,7 @@ class Stair_rebar(object):
         self.rebar_step = self.to_feet(50)
         self.steel_general_class = 500
         self.steel_studs_class = 240
-        self.rebar_mesures()
+        self.rebar_measures()
         self.create_diagonal_rebar()
         self.create_cross_rebar()
         self.create_studs()
@@ -30,7 +30,7 @@ class Stair_rebar(object):
             self._rebar_stud_type = self.get_RebarBarType(self.stud_rebar_diameter, self.steel_studs_class, False)
         return self._rebar_stud_type
 
-    def rebar_mesures(self):
+    def rebar_measures(self):
         # Размеры для диагональных стержней
         # Ширина для расчета количесва дианональных стержней
         self.diagonal_width_calculate = self.stair_width - self.general_rebar_diameter - self.safe_layer * 2
@@ -49,12 +49,12 @@ class Stair_rebar(object):
         "Создаем диагональные стержни марша."
         layer_diam_len = self.safe_layer + self.general_rebar_diameter / 2
         # Теперь подними точки на высоту защитного слоя
-        p1 = self.bottom_diagonal_point + self.diagornal_normal * layer_diam_len
+        p1 = self.bottom_diagonal_point + self.diagonal_normal * layer_diam_len
         p2 = p1 + self.diagonal_vector
         p3 = self.bottom_diagonal_point + self.vertical_vector * (self.bottom_floor_thick - layer_diam_len - self.general_rebar_diameter)
         p4 = p3 + self.stair_directioin
 
-        p5 = self.get_common_points(self.front_face, self.last_tred_face, self.gen_side_face)[0]
+        p5 = self.get_common_points(self.front_face, self.last_tread_face, self.gen_side_face)[0]
         p5 -= layer_diam_len * self.vertical_vector
         p6 = p5 + self.stair_directioin
 
@@ -71,7 +71,7 @@ class Stair_rebar(object):
         # Создаем арматруный стержень на основе точек
         reb = self.create_rebar(self.rebar_general_type, self.gen_side_direction, points, count=self.diagonal_rebar_count, step=self.diagonal_step_calculate)
 
-        p1 = self.bottom_diagonal_point + self.diagornal_normal * (self.stair_thick - layer_diam_len - self.general_rebar_diameter)
+        p1 = self.bottom_diagonal_point + self.diagonal_normal * (self.stair_thick - layer_diam_len - self.general_rebar_diameter)
         p2 = p1 + self.diagonal_vector
         p3 = self.bottom_diagonal_point + self.vertical_vector * layer_diam_len
         p4 = p3 + self.stair_directioin
@@ -92,7 +92,7 @@ class Stair_rebar(object):
         reb = self.create_rebar(self.rebar_general_type, self.gen_side_direction, points, count=self.diagonal_rebar_count, step=self.diagonal_step_calculate)
 
         # Расставим угловые стержни
-        p1 = self.bottom_diagonal_point + self.diagornal_normal * layer_diam_len
+        p1 = self.bottom_diagonal_point + self.diagonal_normal * layer_diam_len
         p2 = p1 + self.diagonal_vector
 
         p3 = self.bottom_diagonal_point + self.vertical_vector * layer_diam_len
@@ -108,10 +108,10 @@ class Stair_rebar(object):
         reb = self.create_rebar(self.rebar_general_type, self.gen_side_direction, points, count=self.diagonal_rebar_count, step=self.diagonal_step_calculate)
 
         # Второй угловой стержень
-        p1 = self.top_diagonal_point + self.diagornal_normal * (self.stair_thick - layer_diam_len - self.general_rebar_diameter)
+        p1 = self.top_diagonal_point + self.diagonal_normal * (self.stair_thick - layer_diam_len - self.general_rebar_diameter)
         p2 = p1 + self.diagonal_vector
 
-        p3 = self.get_common_points(self.front_face, self.last_tred_face, self.gen_side_face)[0]
+        p3 = self.get_common_points(self.front_face, self.last_tread_face, self.gen_side_face)[0]
         p3 -= layer_diam_len * self.vertical_vector
         p4 = p3 + self.stair_directioin
 
@@ -131,7 +131,7 @@ class Stair_rebar(object):
         p1 = self.bottom_diagonal_point + self.vertical_vector * layer_diam_len
         p2 = p1 + self.stair_directioin
 
-        p3 = self.bottom_diagonal_point + self.diagornal_normal * layer_diam_len
+        p3 = self.bottom_diagonal_point + self.diagonal_normal * layer_diam_len
         p4 = p3 + self.diagonal_vector
 
         point_1 = self.intersect_point(p1, p2, p3, p4)
@@ -140,14 +140,14 @@ class Stair_rebar(object):
 
         points = [point_1, point_2]
 
-        p5 = self.top_diagonal_point + self.diagornal_normal * layer_diam_len
+        p5 = self.top_diagonal_point + self.diagonal_normal * layer_diam_len
         distance = p5.DistanceTo(p3)
         rebar_count = floor(distance / self.rebar_step) + 1
 
         reb = self.create_rebar(self.rebar_general_type, self.diagonal_vector, points, count=rebar_count, step=self.rebar_step)
 
-        point_1 += self.diagornal_normal * (self.stair_thick - layer_diam_len * 2 + self.general_rebar_diameter)
-        point_2 += self.diagornal_normal * (self.stair_thick - layer_diam_len * 2 + self.general_rebar_diameter)
+        point_1 += self.diagonal_normal * (self.stair_thick - layer_diam_len * 2 + self.general_rebar_diameter)
+        point_2 += self.diagonal_normal * (self.stair_thick - layer_diam_len * 2 + self.general_rebar_diameter)
         points = [point_1, point_2]
 
         reb = self.create_rebar(self.rebar_general_type, self.diagonal_vector, points, count=rebar_count, step=self.rebar_step)
@@ -157,19 +157,19 @@ class Stair_rebar(object):
         p1 = self.bottom_diagonal_point + self.vertical_vector * layer_diam_len
         p2 = p1 + self.stair_directioin
 
-        p3 = self.bottom_diagonal_point + self.diagornal_normal * layer_diam_len
+        p3 = self.bottom_diagonal_point + self.diagonal_normal * layer_diam_len
         p4 = p3 + self.diagonal_vector
 
-        p5 = self.top_diagonal_point + self.diagornal_normal * layer_diam_len
+        p5 = self.top_diagonal_point + self.diagonal_normal * layer_diam_len
         distance = p5.DistanceTo(p3)
         rebar_count = floor(distance / self.rebar_step) + 1
 
         bend_radius = self.rebar_stud_type.get_Parameter(BuiltInParameter.REBAR_STANDARD_HOOK_BEND_DIAMETER).AsDouble() / 2
         point_1 = self.intersect_point(p1, p2, p3, p4)
         point_1 -= self.diagonal_vector * (bend_radius + self.stud_rebar_diameter / 2)
-        point_1 -= self.diagornal_normal * (self.general_rebar_diameter / 2 + self.stud_rebar_diameter )
+        point_1 -= self.diagonal_normal * (self.general_rebar_diameter / 2 + self.stud_rebar_diameter )
         point_1 += self.gen_side_direction * self.diagonal_side_space
-        point_2 = point_1 + self.diagornal_normal * (self.stair_thick - layer_diam_len * 2 + self.general_rebar_diameter * 2 + self.stud_rebar_diameter * 2)
+        point_2 = point_1 + self.diagonal_normal * (self.stair_thick - layer_diam_len * 2 + self.general_rebar_diameter * 2 + self.stud_rebar_diameter * 2)
         hook = self.get_RebarHookType("Стандартный - 180")
         for i in range(1, int(rebar_count), 2):
             cur_point_1 = point_1 + self.rebar_step * i * self.diagonal_vector
@@ -180,10 +180,10 @@ class Stair_rebar(object):
 
     def create_step_rebar(self):
 
-        p3 = self.bottom_diagonal_point + self.diagornal_normal * self.safe_layer
-        p4 = self.top_diagonal_point + self.diagornal_normal * self.safe_layer
-        for i in self.tred_faces:
-            if i == self.first_tred_face:
+        p3 = self.bottom_diagonal_point + self.diagonal_normal * self.safe_layer
+        p4 = self.top_diagonal_point + self.diagonal_normal * self.safe_layer
+        for i in self.tread_faces:
+            if i == self.first_tread_face:
                 continue
             points = self.get_common_points(i, self.gen_side_face)
             p1 = points[0]
@@ -199,14 +199,14 @@ class Stair_rebar(object):
             point_2 = p1
             point_1 = self.intersect_point(p1, p2, p3, p4)
             p2 = p1 + self.stair_directioin
-            if i != self.last_tred_face:
+            if i != self.last_tread_face:
                 point_3 = self.intersect_point(p1, p2, p3, p4)
             else:
                 last_points = self.get_common_points(self.front_face, self.gen_side_face)
                 last_p3 = last_points[0] + self.stair_directioin * self.safe_layer
                 last_p4 = last_points[1] + self.stair_directioin * self.safe_layer
                 point_3 = self.intersect_point(p1, p2, last_p3, last_p4)
-                    
+
             point_1 += self.gen_side_direction * self.diagonal_side_space
             point_2 += self.gen_side_direction * self.diagonal_side_space
             point_3 += self.gen_side_direction * self.diagonal_side_space
