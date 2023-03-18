@@ -5,7 +5,9 @@ from math import pi, ceil, cos, tan, sin, floor
 
 class Stair_rebar(object):
     def __init__(self):
+        # защитный слой
         self.safe_layer = self.to_feet(25)
+        # анкеровка
         self.anchoring_length = self.to_feet(500)
         self.general_rebar_diameter = self.to_feet(10)
         self.stud_rebar_diameter = self.to_feet(6)
