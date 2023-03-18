@@ -155,6 +155,7 @@ class Stair_rebar(object):
         reb = self.create_rebar(self.rebar_general_type, self.diagonal_vector, points, count=rebar_count, step=self.rebar_step)
 
     def create_studs(self):
+        "Создаем шпильки."
         layer_diam_len = self.safe_layer + self.general_rebar_diameter * 1.5
         p1 = self.bottom_diagonal_point + self.vertical_vector * layer_diam_len
         p2 = p1 + self.stair_directioin
@@ -181,7 +182,7 @@ class Stair_rebar(object):
 
 
     def create_step_rebar(self):
-
+        "Создаем стержни ступеней."
         p3 = self.bottom_diagonal_point + self.diagonal_normal * self.safe_layer
         p4 = self.top_diagonal_point + self.diagonal_normal * self.safe_layer
         for i in self.tread_faces:
@@ -201,24 +202,26 @@ class Stair_rebar(object):
             point_2 = p1
             point_1 = self.intersect_point(p1, p2, p3, p4)
             p2 = p1 + self.stair_directioin
-            if i != self.last_tread_face:
-                point_3 = self.intersect_point(p1, p2, p3, p4)
-            else:
-                last_points = self.get_common_points(self.front_face, self.gen_side_face)
-                last_p3 = last_points[0] + self.stair_directioin * self.safe_layer
-                last_p4 = last_points[1] + self.stair_directioin * self.safe_layer
-                point_3 = self.intersect_point(p1, p2, last_p3, last_p4)
+            # if i != self.last_tread_face:
+            point_3 = self.intersect_point(p1, p2, p3, p4)
+            # else:
+            #     last_points = self.get_common_points(self.front_face, self.gen_side_face)
+            #     last_p3 = last_points[0] + self.stair_directioin * self.safe_layer
+            #     last_p4 = last_points[1] + self.stair_directioin * self.safe_layer
+            #     point_3 = self.intersect_point(p1, p2, last_p3, last_p4)
 
             point_1 += self.gen_side_direction * self.diagonal_side_space
             point_2 += self.gen_side_direction * self.diagonal_side_space
             point_3 += self.gen_side_direction * self.diagonal_side_space
             points = [point_1, point_2, point_3]
+            # Создаем стержни проступи.
             reb = self.create_rebar(self.rebar_stud_type, self.gen_side_direction, points, step=self.diagonal_step_calculate, count=self.diagonal_rebar_count)
 
             point_2 += (self.stud_rebar_diameter / 2 + self.general_rebar_diameter / 2) * self.vertical_vector.Negate()
             point_2 += (self.stud_rebar_diameter / 2 + self.general_rebar_diameter / 2) * self.stair_directioin.Negate()
             point_3 = point_2 + self.gen_side_direction * (self.stair_width - self.safe_layer * 2)
             points = [point_2, point_3]
+            # Создаем горизонтальные стержни проступи.
             reb = self.create_rebar(self.rebar_general_type, self.stair_directioin.Negate(), points, step=self.to_feet(55), count=3)
 
 
