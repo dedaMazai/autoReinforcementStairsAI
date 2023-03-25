@@ -13,10 +13,6 @@ dataEnteringNode = IN
 
 stair = IN[7]
 
-with Transaction(doc, "Анализ геометрии") as t:
-    t.Start()
-    t.Commit()
-
 class Stair_rebar(object):
     def __init__(self):
         # защитный слой
@@ -500,7 +496,7 @@ class Stair(Geometry, Stair_rebar):
     def __init__(self, element, doc):
         self.element = element
         self.doc = doc
-        self.geometry = self.element.Geometry[Options()]
+        self.geometry = self.element.Geometry()
         super(Stair, self).__init__()
 
 stair = Stair(stair, doc)
