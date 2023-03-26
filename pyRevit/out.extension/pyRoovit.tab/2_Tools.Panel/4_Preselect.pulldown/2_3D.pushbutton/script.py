@@ -53,6 +53,6 @@ for s in sel:
 
 # Select the elements
 try:
-    uidoc.Selection.SetElementIds(elementIds)
+    uidoc.Selection.SetElementId(elementIds)
 except:
     script.exit()

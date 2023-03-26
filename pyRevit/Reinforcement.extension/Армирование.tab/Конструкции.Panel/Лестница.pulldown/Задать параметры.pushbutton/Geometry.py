@@ -7,7 +7,23 @@ from Stair_rebar import Stair_rebar
 
 class Geometry(object):
     "Класс отвечающий за анализ геометрии."
-    def __init__(self):
+    def __init__(
+        self,
+        safeLayer,
+        anchoringLength,
+        generalRebarDiameter,
+        studRebarDiameter,
+        rebarStep,
+        steelGeneralClass,
+        steelStudsClass,
+    ):
+        print(safeLayer)
+        print(anchoringLength)
+        print(generalRebarDiameter)
+        print(studRebarDiameter)
+        print(rebarStep)
+        print(steelGeneralClass)
+        print(steelStudsClass)
         self.analysis_faces()
         self.define_measures()
         super(Geometry, self).__init__()

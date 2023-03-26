@@ -4,16 +4,25 @@ from Autodesk.Revit.DB.Structure import RebarBarType, Rebar, RebarHookOrientatio
 from math import pi, ceil, cos, tan, sin, floor
 
 class Stair_rebar(object):
-    def __init__(self):
+    def __init__(
+        self,
+        safeLayer,
+        anchoringLength,
+        generalRebarDiameter,
+        studRebarDiameter,
+        rebarStep,
+        steelGeneralClass,
+        steelStudsClass,
+    ):
         # защитный слой
-        self.safe_layer = self.to_feet(25)
+        self.safe_layer = self.to_feet(safeLayer)
         # анкеровка
-        self.anchoring_length = self.to_feet(500)
-        self.general_rebar_diameter = self.to_feet(10)
-        self.stud_rebar_diameter = self.to_feet(6)
-        self.rebar_step = self.to_feet(50)
-        self.steel_general_class = 500
-        self.steel_studs_class = 240
+        self.anchoring_length = self.to_feet(anchoringLength)
+        self.general_rebar_diameter = self.to_feet(generalRebarDiameter)
+        self.stud_rebar_diameter = self.to_feet(studRebarDiameter)
+        self.rebar_step = self.to_feet(rebarStep)
+        self.steel_general_class = steelGeneralClass
+        self.steel_studs_class = steelStudsClass
         self.rebar_measures()
         self.create_diagonal_rebar()
         self.create_cross_rebar()
