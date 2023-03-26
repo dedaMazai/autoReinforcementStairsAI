@@ -57,7 +57,8 @@ class MyWindow(Windows.Window):
 
     def RUN_Click(self, sender, args):
         self.Close()
-        stair = doc.GetElement(ElementId(2708307))
+        stair = revit.pick_element()
+        # stair = doc.GetElement(ElementId(2708307))
 
         stairsArm = Stair(
             stair,
