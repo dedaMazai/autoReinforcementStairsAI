@@ -22,25 +22,14 @@ xamlfile = script.get_bundle_file('ui.xaml')
 
 logger = script.get_logger()
 
+with revit.Transaction('Update Keynotes'):
 
-class Stair(Geometry, Stair_rebar):
+    class Stair(Geometry, Stair_rebar):
 
-    def __init__(
-        self,
-        element,
-        doc,
-        safeLayer,
-        anchoringLength,
-        generalRebarDiameter,
-        studRebarDiameter,
-        rebarStep,
-        steelGeneralClass,
-        steelStudsClass,
-    ):
-        self.element = element
-        self.doc = doc
-        self.geometry = self.element.Geometry[Options()]
-        super(Stair, self).__init__(
+        def __init__(
+            self,
+            element,
+            doc,
             safeLayer,
             anchoringLength,
             generalRebarDiameter,
@@ -48,28 +37,39 @@ class Stair(Geometry, Stair_rebar):
             rebarStep,
             steelGeneralClass,
             steelStudsClass,
-        )
+        ):
+            self.element = element
+            self.doc = doc
+            self.geometry = self.element.Geometry[Options()]
+            super(Stair, self).__init__(
+                safeLayer,
+                anchoringLength,
+                generalRebarDiameter,
+                studRebarDiameter,
+                rebarStep,
+                steelGeneralClass,
+                steelStudsClass,
+            )
 
-class MyWindow(Windows.Window):
+    class MyWindow(Windows.Window):
 
-    def __init__(self):
-        wpf.LoadComponent(self, xamlfile)
+        def __init__(self):
+            wpf.LoadComponent(self, xamlfile)
 
-    def RUN_Click(self, sender, args):
-        self.Close()
-        stair = revit.pick_element()
-        # stair = doc.GetElement(ElementId(2708307))
+        def RUN_Click(self, sender, args):
+            self.Close()
+            stair = revit.pick_element()
 
-        stairsArm = Stair(
-            stair,
-            doc,
-            int(self.safeLayer.Text),
-            int(self.anchoringLength.Text),
-            int(self.generalRebarDiameter.Text),
-            int(self.studRebarDiameter.Text),
-            int(self.rebarStep.Text),
-            int(self.steelGeneralClass.Text),
-            int(self.steelStudsClass.Text),
-        )
+            newStair = Stair(
+                stair,
+                doc,
+                int(self.safeLayer.Text),
+                int(self.anchoringLength.Text),
+                int(self.generalRebarDiameter.Text),
+                int(self.studRebarDiameter.Text),
+                int(self.rebarStep.Text),
+                int(self.steelGeneralClass.Text),
+                int(self.steelStudsClass.Text),
+            )
 
-MyWindow().ShowDialog()
+    MyWindow().ShowDialog()

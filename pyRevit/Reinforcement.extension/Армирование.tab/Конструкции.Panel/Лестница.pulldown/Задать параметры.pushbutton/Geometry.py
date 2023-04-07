@@ -17,16 +17,17 @@ class Geometry(object):
         steelGeneralClass,
         steelStudsClass,
     ):
-        print(safeLayer)
-        print(anchoringLength)
-        print(generalRebarDiameter)
-        print(studRebarDiameter)
-        print(rebarStep)
-        print(steelGeneralClass)
-        print(steelStudsClass)
         self.analysis_faces()
         self.define_measures()
-        super(Geometry, self).__init__()
+        super(Geometry, self).__init__(
+            safeLayer,
+            anchoringLength,
+            generalRebarDiameter,
+            studRebarDiameter,
+            rebarStep,
+            steelGeneralClass,
+            steelStudsClass,
+        )
 
     def define_measures(self):
         "Снимаем недостающие размеры."
